@@ -1,5 +1,5 @@
 function setup() {
-    createCanvas(800, 900);
+    createCanvas(800, 480);
     colorMode(HSB);
 
     initMenu();
@@ -11,7 +11,8 @@ function draw() {
             drawMenu();
             break;
         default:
-            console.error(`unhandled state '${state}'`);
+            background(0, 255, 255);
+            throw new Error(`unhandled state "${state}"`);
     }
 }
 
@@ -26,10 +27,11 @@ const STATE = {
 };
 
 function setState(newState) {
-    if (state === STATE.MENU) {
-        opts.dropdowns.map(el => el.remove());
+    if (state === STATE.MENU)
+        [opts.start, ...opts.dropdowns].map(el => el.remove());
+    
+    if (newState == STATE.MENU)
         initMenu();
-    }
 
     state = newState;
 }
@@ -44,30 +46,44 @@ function initMenu() {
 
     const modes = Object.values(STATE).filter(v => v !== STATE.MENU);
     opts.dropdowns = [
-        createDropdown('Mode', [100, 100], modes),
-        createDropdown('Difficulty', [235, 100], ['Easy', 'Medium', 'Hard']),
-        createDropdown('No. of Rounds', [390, 100], ['2', '4', '6']),
+        createDropdown("Mode", [200, 200], modes),
+        createDropdown("Difficulty", [350, 200], ["Easy", "Medium", "Hard"]),
+        createDropdown("# Rounds", [520, 200], ["2", "4", "6"]),
     ];
+
+    const btn = createButton("Start");
+    btn.position(350, 330);
+    btn.size(100, 50);
+    btn.mousePressed(function () {
+        const [mode, difficulty, rounds] = [opts["Mode"], opts["Difficulty"], opts["# Rounds"]];
+        if (mode && difficulty && rounds)
+            setState(mode);
+    });
+    opts.start = btn;
 }
 
 function drawMenu() {
-    background(190, 204, 100);
+    background(190, 100, 100);
+
+    fill(0, 0, 0);
+    textSize(52);
+    textAlign(CENTER);
+    text("fseapp", 400, 100);
 }
 
-function createDropdown(id, pos, opts) {
-    const text = opts[id] = `Select ${id}`;
-    textAlign(CENTER);
+function createDropdown(id, pos, entries) {
+    const text = `Select ${id}`;
 
     sel = createSelect();
     sel.position(pos[0], pos[1]);
     sel.changed(function () {
         const val = this.value();
-        opts[id] = val === text ? null : val;
+        opts[id] = val === text ? undefined : val;
         console.log(`dropdown '${id}' set to '${val}'`);
     });
 
-    for (const opt of [text, ...opts]) {
-        sel.option(opt);
+    for (const entry of [text, ...entries]) {
+        sel.option(entry);
     }
 
     return sel;
