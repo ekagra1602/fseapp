@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "main": "index.html",
   "scripts": {
-    "start": "serve"
+    "start": "serve",
+    "build": "echo static project, no build required"
   },
   "devDependencies": {
     "serve": "^14.0.1"
