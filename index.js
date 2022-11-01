@@ -14,8 +14,8 @@ function createDropdown(id, pos, opts) {
 
     sel = createSelect();
     sel.position(pos[0], pos[1]);
-    sel.changed(() => {
-        const val = sel.value();
+    sel.changed(function() {
+        const val = this.value();
         opts[id] = val === text ? null : val;
         console.log(`dropdown '${id}' set to '${val}'`);
     });
