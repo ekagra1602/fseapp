@@ -1,11 +1,32 @@
-let opts = {};
+const STATE = {
+    MENU: "Menu",
+    DIRECTION: "Direction",
+    COLOR: "Color",
+    TYPING: "Typing",
+};
+
+let opts, state;
 
 function setup() {
-    createCanvas(800, 900);
+    opts = ({});
+    state = STATE.MENU;
 
-    createDropdown('Mode', [100, 100], ['Direction', 'Colour', 'Typing']);
+    createCanvas(800, 900);
+    colorMode(HSB);
+
+    const modes = Object.values(STATE).filter(v => v !== STATE.MENU);
+    createDropdown('Mode', [100, 100], modes);
     createDropdown('Difficulty', [235, 100], ['Easy', 'Medium', 'Hard']);
     createDropdown('No. of Rounds', [390, 100], ['2', '4', '6']);
+}
+
+function draw() {
+    switch (state) {
+        case STATE.MENU:
+            background(190, 204, 100);
+        default:
+            console.error(`unhandled state '${state}'`);
+    }
 }
 
 function createDropdown(id, pos, opts) {
@@ -23,9 +44,4 @@ function createDropdown(id, pos, opts) {
     for (const opt of [text, ...opts]) {
         sel.option(opt);
     }
-}
-
-function draw() {
-    colorMode(HSB);
-    background(190, 204, 100);
 }
