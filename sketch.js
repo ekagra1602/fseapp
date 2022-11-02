@@ -28,7 +28,7 @@ const STATE = {
 
 function setState(newState) {
     if (state === STATE.MENU)
-        [opts.start, ...opts.dropdowns].map(el => el.remove());
+        [...opts.btns, ...opts.dropdowns].map(el => el.remove());
 
     if (newState == STATE.MENU)
         initMenu();
@@ -38,12 +38,15 @@ function setState(newState) {
 // #endregion
 
 // #region menu
-var opts, img;
+var opts, backgroundImg, settingsImg;
 
 function initMenu() {
-    opts = ({});
+    opts = ({
+        settings: false
+    });
     state = STATE.MENU;
-    img = loadImage("bg.jpg");
+    backgroundImg = loadImage("assets/background.jpg");
+    settingsImg = loadImage("assets/settings.png");
 
     const labels = ["Mode", "Difficulty", "# Rounds"];
     const modes = Object.values(STATE).filter(v => v !== STATE.MENU);
@@ -53,20 +56,28 @@ function initMenu() {
         createDropdown(labels[2], [400, 300], ["2", "4", "6"]),
     ];
 
-    const btn = createButton("Start");
-    btn.position(255, 370);
-    btn.size(100, 50);
-    btn.style("background", color(25, 23, 200, 50));
-    btn.mousePressed(function () {
+    const start = createButton("Start");
+    start.position(255, 370);
+    start.size(100, 50);
+    start.style("background", color(25, 23, 200, 50));
+    start.mousePressed(function () {
         const [mode, diff, rounds] = labels.map(k => opts[k]);
         if (mode && diff && rounds)
             setState(mode);
     });
-    opts.start = btn;
+
+    const settings = createImg("assets/settings.png");
+    settings.position(610, 0);
+    settings.size(40, 40);
+    settings.mousePressed(function () {
+        console.log("opened settings");
+    })
+
+    opts.btns = [start, settings];
 }
 
 function drawMenu() {
-    background(img);
+    background(backgroundImg);
 
     fill("pink");
     stroke("black");
