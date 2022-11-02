@@ -1,6 +1,9 @@
+p5.disableFriendlyErrors = true;
+var cnv;
+
 function setup() {
-    createCanvas(650, 600);
-    colorMode(HSB);
+    cnv = createCanvas(650, 600);
+    colorMode(HSB, 360, 100, 100, 100);
 
     initMenu();
 }
@@ -28,7 +31,7 @@ const STATE = {
 
 function setState(newState) {
     if (state === STATE.MENU)
-        [...opts.btns, ...opts.dropdowns].map(el => el.remove());
+        menuChildren().map(el => el.remove());
 
     if (newState == STATE.MENU)
         initMenu();
@@ -59,18 +62,28 @@ function initMenu() {
     const start = createButton("Start");
     start.position(255, 370);
     start.size(100, 50);
-    start.style("background", color(25, 23, 200, 50));
+    start.style("background", color(25, 23, 100));
     start.mousePressed(function () {
         const [mode, diff, rounds] = labels.map(k => opts[k]);
         if (mode && diff && rounds)
             setState(mode);
     });
 
+    // settings button
     const settings = createImg("assets/settings.png");
     settings.position(610, 0);
     settings.size(40, 40);
-    settings.mousePressed(function () {
-        console.log("opened settings");
+    settings.mousePressed(function () { // when the gear is clicked
+        opts.settings = true; // open the settings menu
+        menuChildren().map(el => el.hide()); // hide the dropdowns & btns
+        cnv.mousePressed(function () { // register a click handler
+            const [outX, outY] = [mouseX < 50 || mouseX > 600, mouseY < 50 || mouseY > 550];
+            if (outX || outY) { // when the click is outside the settings menu
+                opts.settings = false; // close the settings menu
+                menuChildren().map(el => el.show()); // show the underlying elements
+                cnv.mousePressed(false); // unregister the click handler
+            }
+        })
     })
 
     opts.btns = [start, settings];
@@ -78,6 +91,11 @@ function initMenu() {
 
 function drawMenu() {
     background(backgroundImg);
+
+    if (opts.settings) {
+        drawSettings();
+        return;
+    }
 
     fill("pink");
     stroke("black");
@@ -90,12 +108,30 @@ function drawMenu() {
     text("Wonder Kids", 325, 180);
 }
 
+function drawSettings() {
+    noStroke();
+    fill(0, 0, 0, 40);
+    rect(0, 0, 650, 600);
+
+    fill(210, 23, 40, 96);
+    rect(50, 50, 550, 500);
+
+    textSize(40);
+    textStyle(NORMAL);
+    fill("pink");
+    stroke("black");
+    strokeWeight(8);
+    text("Settings", 325, 120);
+}
+
+const menuChildren = () => [...opts.btns, ...opts.dropdowns];
+
 function createDropdown(id, pos, entries) {
     const text = `Select ${id}`;
 
     sel = createSelect();
     sel.position(pos[0], pos[1]);
-    sel.style("background", color(25, 23, 200, 50));
+    sel.style("background", color(25, 23, 100));
     sel.changed(function () {
         const val = this.value();
         opts[id] = val === text ? undefined : val;
