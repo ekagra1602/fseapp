@@ -1,5 +1,5 @@
 function setup() {
-    createCanvas(800, 480);
+    createCanvas(650, 600);
     colorMode(HSB);
 
     initMenu();
@@ -11,7 +11,7 @@ function draw() {
             drawMenu();
             break;
         default:
-            background(0, 255, 255);
+            background(0, 100, 100);
             throw new Error(`unhandled state "${state}"`);
     }
 }
@@ -29,7 +29,7 @@ const STATE = {
 function setState(newState) {
     if (state === STATE.MENU)
         [opts.start, ...opts.dropdowns].map(el => el.remove());
-    
+
     if (newState == STATE.MENU)
         initMenu();
 
@@ -38,37 +38,45 @@ function setState(newState) {
 // #endregion
 
 // #region menu
-var opts;
+var opts, img;
 
 function initMenu() {
     opts = ({});
     state = STATE.MENU;
+    img = loadImage("bg.jpg");
 
+    const labels = ["Mode", "Difficulty", "# Rounds"];
     const modes = Object.values(STATE).filter(v => v !== STATE.MENU);
     opts.dropdowns = [
-        createDropdown("Mode", [200, 200], modes),
-        createDropdown("Difficulty", [350, 200], ["Easy", "Medium", "Hard"]),
-        createDropdown("# Rounds", [520, 200], ["2", "4", "6"]),
+        createDropdown(labels[0], [110, 300], modes),
+        createDropdown(labels[1], [250, 300], ["Easy", "Medium", "Hard"]),
+        createDropdown(labels[2], [400, 300], ["2", "4", "6"]),
     ];
 
     const btn = createButton("Start");
-    btn.position(350, 330);
+    btn.position(255, 370);
     btn.size(100, 50);
+    btn.style("background", color(25, 23, 200, 50));
     btn.mousePressed(function () {
-        const [mode, difficulty, rounds] = [opts["Mode"], opts["Difficulty"], opts["# Rounds"]];
-        if (mode && difficulty && rounds)
+        const [mode, diff, rounds] = labels.map(k => opts[k]);
+        if (mode && diff && rounds)
             setState(mode);
     });
     opts.start = btn;
 }
 
 function drawMenu() {
-    background(190, 100, 100);
+    background(img);
 
-    fill(0, 0, 0);
-    textSize(52);
+    fill("pink");
+    stroke("black");
+    strokeWeight(8);
+
+    textSize(60);
+    textFont("Georgia");
+    textStyle(BOLD);
     textAlign(CENTER);
-    text("fseapp", 400, 100);
+    text("Wonder Kids", 325, 180);
 }
 
 function createDropdown(id, pos, entries) {
@@ -76,6 +84,7 @@ function createDropdown(id, pos, entries) {
 
     sel = createSelect();
     sel.position(pos[0], pos[1]);
+    sel.style("background", color(25, 23, 200, 50));
     sel.changed(function () {
         const val = this.value();
         opts[id] = val === text ? undefined : val;
