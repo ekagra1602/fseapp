@@ -13,6 +13,9 @@ function draw() {
         case STATE.MENU:
             drawMenu();
             break;
+        case STATE.COLOR:
+            drawColor();
+            break;
         default:
             background(0, 100, 100);
             throw new Error(`unhandled state "${state}"`);
@@ -143,5 +146,22 @@ function createDropdown(id, pos, entries) {
     }
 
     return sel;
+}
+// #endregion
+
+// #region color page
+function drawColor() {
+    background(240, 100, 100);
+
+    text(`Select the color ${color}`);
+    const colors = ["red", "yellow", "blue", "green"];
+
+    for (let i = 0; i < 4; i++) {
+        const x = (i % 2) * 325;
+        const y = Math.floor(i / 2) * 300;
+        
+        fill(colors[i]);
+        rect(x, y, 325, 300);
+    }
 }
 // #endregion
